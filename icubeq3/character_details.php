@@ -1,47 +1,20 @@
 <?php
- function curl_contents( $url, $params = null )
-{
-    
-     $curl = curl_init();
-     $user_agent = 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)';
-     
-     curl_setopt($curl, CURLOPT_URL, $url); //The URL to fetch. This can also be set when initializing a session with curl_init().
-     curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE); //TRUE to return the transfer as a string of the return value of curl_exec() instead of outputting it out directly.
-     curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5); //The number of seconds to wait while trying to connect.	
+require_once("helper.php");
+$id = $_GET['id'];
+$character     = json_decode(curl_contents("https://anapioficeandfire.com/api/characters/".$id),true);
 
+$allegiance = "";
+$books = "";
 
-    $post_data = '';
-
-    if(is_array($params) AND count($params) > 0 )
-    {
-        foreach($params as $k => $v) 
-        { 
-            $post_data .= $k . '=' . $v . '&'; 
-        }
-        rtrim($post_data, '&');
-
-        curl_setopt($curl, CURLOPT_POST, count($params));
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $post_data);
-
-    }
-    
-     curl_setopt($curl, CURLOPT_USERAGENT, $user_agent); //The contents of the "User-Agent: " header to be used in a HTTP request.
-     curl_setopt($curl, CURLOPT_FAILONERROR, TRUE);  //To fail silently if the HTTP code returned is greater than or equal to 400.
-     curl_setopt($curl, CURLOPT_FOLLOWLOCATION, TRUE); //To follow any "Location: " header that the server sends as part of the HTTP header.
-     curl_setopt($curl, CURLOPT_AUTOREFERER, TRUE); //To automatically set the Referer: field in requests where it follows a Location: redirect.
-     curl_setopt($curl, CURLOPT_TIMEOUT, 10); //The maximum number of seconds to allow cURL functions to execute.	
-
-     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE); //get contents of secure pages
-     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
-     
-     $contents = curl_exec($curl);
-     curl_close($curl);
-     return $contents; 
+foreach($character['allegiances'] as $allegianceLink){
+    $result = json_decode(curl_contents($allegianceLink),true);
+    $allegiance .=$result['name']." ";
 }
 
-$books          = json_decode(curl_contents("https://anapioficeandfire.com/api/books"),true);
-$characters     = json_decode(curl_contents("https://anapioficeandfire.com/api/characters"),true);
-$houses         = json_decode(curl_contents("https://anapioficeandfire.com/api/houses"),true);
+foreach($character['books'] as $bookLink){
+    $result = json_decode(curl_contents($bookLink),true);
+    $books .=$result['name']." ";
+}
 ?>
 
 <html>
@@ -49,71 +22,25 @@ $houses         = json_decode(curl_contents("https://anapioficeandfire.com/api/h
 </header>
 
 <body>
-<h4>Books</h4>
-    <table id="books">
-        <thead>
-            <tr>
-                <th>
-                    Name
-                </th>
-                <th>
-                    ISBN
-                </th>
-                <th>
-                    Publisher
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach($books as $book): ?>
-                <tr><td><?= $book['name'] ?></td><td><?= $book['isbn'] ?></td><td><?= $book['publisher'] ?></td></tr>
-            <?php endforeach ?>
-        </tbody>
-    </table>
-    <hr>
-    <h4>Characters</h4>
-    <table id="characters">
-        <thead>
-            <tr>
-                <th>
-                    Name
-                </th>
-                <th>
-                    Culture
-                </th>
-                <th>
-                    Link
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach($characters as $character): ?>
-                <tr><td><?= $character['name'] ?></td><td><?= $character['culture'] ?></td><td><a href="<?= $character['url'] ?> " target="_blank">details</a></td></tr>
-            <?php endforeach ?>
-        </tbody>
-    </table>
-<hr>
-<h4>Houses</h4>
-    <table id="houses">
-        <thead>
-            <tr>
-                <th>
-                    Name
-                </th>
-                <th>
-                    Culture
-                </th>
-                <th>
-                    Born
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach($houses as $house): ?>
-                <tr><td><?= $house['name'] ?></td><td><?= $house['region'] ?></td><td><?= $house['words'] ?></td></tr>
-            <?php endforeach ?>
-        </tbody>
-    </table>
+<h4>Character Details</h4>
+<table id="characters">
+               
+                <tbody>
+                    <tr><td>Aliases</td><td><?= implode(", ",$character['aliases']) ?></td></tr>
+                    <tr><td>Allegiances</td><td> <?= $allegiance; ?></td></tr>
+                    <tr><td>Books</td><td> <?= $books ?></td></tr>
+                    <tr><td>Born</td><td> <?= $character['born'] ?> </td></tr>
+                    <tr><td>Culture</td><td><?= $character['culture'] ?></td></tr>
+                    <tr><td>Died</td><td> <?= $character['died'] ?></td></tr>
+                    <tr><td>Father</td><td> <?= $character['father'] ?></td></tr>
+                    <tr><td>Gender</td><td> <?= $character['gender'] ?></td></tr>
+                    <tr><td>Mother</td><td> <?= $character['mother'] ?></td></tr>
+                    <tr><td>Name</td><td> <?= $character['name'] ?></td></tr>
+                    <tr><td>Played By</td><td> <?= implode(", ",$character['playedBy']) ?></td></tr>
+                    <tr><td>Titles</td><td> <?= implode(", ",$character['titles']) ?></td></tr>
+                    <tr><td>Tv Series</td><td><?= implode(", ",$character['tvSeries']) ?></td></tr>
+                </tbody>
+            </table>
 </body>
 
 </html>

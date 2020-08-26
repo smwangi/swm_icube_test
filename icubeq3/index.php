@@ -150,6 +150,25 @@ $('.book-details').on('click', function() {
         $('#details').empty();
         let html = '<table>';
 
+        $.each(data.characters, function(k, v) {
+
+            let id = v.substring(v.lastIndexOf("/") + 1);
+            callAPI(v).done(function(character) {
+
+                $('.character').append('<a href="character_details.php?id=' + id +
+                    '" target="_blank">' + character.name + '</>').append(", ");
+            });
+        });
+
+        $.each(data.povCharacters, function(k, v) {
+
+            let id = v.substring(v.lastIndexOf("/") + 1);
+            callAPI(v).done(function(povCharacter) {
+
+                $('.povCharacter').append('<a href="character_details.php?id=' + id +
+                    '" target="_blank">' + povCharacter.name + '</>').append(", ");
+            });
+        });
         console.log(data);
         html += '<tr><td>Book</td><td>' + data.name + '</td></tr>';
         html += '<tr><td>Authors</td><td>' + data.authors.toString() + '</td></tr>';
@@ -159,6 +178,8 @@ $('.book-details').on('click', function() {
         html += '<tr><td>No. of Pages</td><td>' + data.numberOfPages + '</td></tr>';
         html += '<tr><td>Publisher</td><td>' + data.publisher + '</td></tr>';
         html += '<tr><td>Released</td><td>' + data.released + '</td></tr>';
+        html += '<tr><td>Character</td><td class="character"></td></tr>';//' + data.released + '
+        html += '<tr><td>Pov Character</td><td class="povCharacter"></td></tr>';//' + data.released + '
         html += '</table>';
 
         $('#details').html(html);
@@ -203,24 +224,54 @@ $('.house-details').on('click', function() {
         $('#house-details').empty();
         let html = '<table>';
 
-        console.log(data);
+        callAPI(data.overlord).done(function(overlord) {
+
+            $('.overlord').append(overlord.name);
+        });
+
+        if (data.currentLord !== "")
+            callAPI(data.currentLord).done(function(currentLord) {
+                let id = data.currentLord.substring(data.currentLord.lastIndexOf("/") + 1);
+                $('.currentLord').append('<a href="character_details.php?id=' + id +
+                    '" target="_blank">' + currentLord.name + '</>');
+            });
+
+        if (data.heir !== "")
+            callAPI(data.heir).done(function(heir) {
+                let id = data.heir.substring(data.heir.lastIndexOf("/") + 1);
+                $('.heir').append('<a href="character_details.php?id=' + id +
+                    '" target="_blank">' + heir.name + '</>');
+            });
+
+        $.each(data.swornMembers, function(k, v) {
+
+            let id = v.substring(v.lastIndexOf("/") + 1);
+            callAPI(v).done(function(swornmember) {
+
+                $('.swornmember').append('<a href="character_details.php?id=' + id +
+                    '" target="_blank">' + swornmember.name + '</>').append(", ");
+            });
+        });
+
         html += '<tr><td>Ancestral Weapons</td><td>' + data.ancestralWeapons.toString() + '</td></tr>';
         html += '<tr><td>Cadet Branches</td><td>' + data.cadetBranches + '</td></tr>';
         html += '<tr><td>Coat of Arms</td><td>' + data.coatOfArms + '</td></tr>';
-        html += '<tr><td>Current Lord</td><td>' + data.currentLord + '</td></tr>';
+        html +=
+            '<tr><td>Current Lord</td><td class="currentLord"></td></tr>'; //' + data.currentLord + '
         html += '<tr><td>Died Out</td><td>' + data.diedOut + '</td></tr>';
         html += '<tr><td>Founded</td><td>' + data.founded + '</td></tr>';
         html += '<tr><td>Founder</td><td>' + data.founder + '</td></tr>';
-        html += '<tr><td>Heir</td><td>' + data.heir + '</td></tr>';
+        html += '<tr><td>Heir</td><td class="heir"></td></tr>'; //' + data.heir + '
         html += '<tr><td>Name</td><td>' + data.name + '</td></tr>';
-        html += '<tr><td>Overlord</td><td>' +data.overlord + '</td></tr>';        
+        html += '<tr><td>Overlord</td><td  class="overlord"></td></tr>'; //' +data.overlord+ '    
         html += '<tr><td>Region</td><td>' + data.region + '</td></tr>';
         html += '<tr><td>Seats</td><td>' + data.seats.toString() + '</td></tr>';
-        html += '<tr><td>Sworn Members</td><td>' + data.swornMembers.toString() + '</td></tr>';
+        html +=
+            '<tr><td>Sworn Members</td><td class="swornmember"></td></tr>'; //' + data.swornMembers.toString() + '
         html += '<tr><td>Titles</td><td>' + data.titles.toString() + '</td></tr>';
         html += '<tr><td>Words</td><td>' + data.words + '</td></tr>';
         html += '</table>';
-        
+
         $('#house-details').html(html);
     });
 
