@@ -48,6 +48,8 @@ To execute the file,
 run java -jar q4-iou-tracker.jar
 OR open code using java code editor, preferably eclipse
 
+Uses in-memory database h2.
+
 To view api documentation and run test follow below
 http://YOUR_DOMAIN/swagger-ui.html (example: http://localhost:8080/swagger-ui.html)
 http://YOUR_DOMAIN/v2/api-docs (example: http://localhost:8080/v2/api-docs)
